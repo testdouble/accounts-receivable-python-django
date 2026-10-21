@@ -1,0 +1,61 @@
+[project]
+name = "accounts-receivable"
+version = "0.1.0"
+description = "Accounts Receivable - a Django port of the Rails accounts-receivable app"
+readme = "README.md"
+# Lower bound tracks .tool-versions; the upper bound pre-authorises the Python 3.15
+# bump (gated on Django 6.1.3, 2026-11-03) so that move needs no pyproject edit.
+requires-python = ">=3.14,<3.16"
+dependencies = [
+    "django==6.1.2",
+    "django-ninja==1.7.1",
+    "pydantic==2.14.1",
+]
+
+[dependency-groups]
+dev = [
+    # polyfactory's only hard deps are faker + typing-extensions, so Faker comes free.
+    # The [pydantic] extra is deliberately unused: it only adds pydantic[email]
+    # (email-validator + dnspython), and pydantic already arrives via django-ninja.
+    "polyfactory==3.5.0",
+    "pytest>=8.4.2,<9",
+    "pytest-django==4.14.0",
+    "pytest-mock==3.17.0",
+    "ruff==0.17.1",
+]
+
+[tool.uv]
+required-version = ">=0.13"        # fails loudly on a stale uv instead of mis-resolving Python
+package = false                    # manage.py + flat layout at the repo root
+python-preference = "only-system"  # asdf owns the interpreter
+python-downloads = "never"         # never let uv fetch its own CPython
+default-groups = ["dev"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.test_settings"
+pythonpath = ["."]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q --strict-markers --strict-config --import-mode=importlib"
+filterwarnings = ["error"]
+
+[tool.ruff]
+target-version = "py314"            # -> "py315" when .tool-versions moves
+line-length = 100
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+# DTZ is load-bearing for the domain pass: it bans naive datetime.now()/date.today(),
+# exactly the mistake a Rails porter makes when implementing due-date arithmetic.
+select = ["E", "W", "F", "I", "N", "UP", "B", "A", "C4", "DJ", "DTZ", "PT", "SIM", "TID", "RUF"]
+ignore = ["RUF012"]                 # Django/polyfactory class attrs are mutable by design
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "PLR2004"]
+"config/settings.py" = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["accounts_receivable", "config", "tests"]
+
+[tool.ruff.format]
+quote-style = "double"
