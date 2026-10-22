@@ -115,8 +115,8 @@ PolyFactory has no Django ORM support — it covers Pydantic, attrs, msgspec and
 SQLAlchemy, but ships no `DjangoModelFactory`. `tests/factories/base.py` is a small
 adapter built on PolyFactory's `BaseFactory` that fills the FactoryBot role for Django
 models; its own behaviour is covered by `tests/test_django_factory.py`, and its
-deviations from FactoryBot are documented in the module docstring. Pydantic schemas use
-PolyFactory directly, with no adapter.
+deviations from FactoryBot are documented in the module docstring. Pydantic schemas
+need no adapter — PolyFactory supports them natively.
 
 `tests/testapp/` holds throwaway models used only to exercise that adapter. They are
 not domain models.

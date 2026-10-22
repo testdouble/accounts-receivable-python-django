@@ -14,7 +14,6 @@ faker = BaseFactory.__faker__
 
 
 class AuthorFactory(DjangoModelFactory[Author]):
-    __model__ = Author
     __set_as_default_factory_for_type__ = True
 
     name = Use(faker.name)
@@ -25,7 +24,6 @@ class AuthorFactory(DjangoModelFactory[Author]):
 
 
 class WidgetFactory(DjangoModelFactory[Widget]):
-    __model__ = Widget
     __set_as_default_factory_for_type__ = True
 
     # The FactoryBot "implicit association", made explicit. Persisted even under

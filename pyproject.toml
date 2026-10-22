@@ -48,11 +48,15 @@ extend-exclude = ["*/migrations/*"]
 # DTZ is load-bearing for the domain pass: it bans naive datetime.now()/date.today(),
 # exactly the mistake a Rails porter makes when implementing due-date arithmetic.
 select = ["E", "W", "F", "I", "N", "UP", "B", "A", "C4", "DJ", "DTZ", "PT", "SIM", "TID", "RUF"]
-ignore = ["RUF012"]                 # Django/polyfactory class attrs are mutable by design
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "PLR2004"]
 "config/settings.py" = ["E501"]
+# RUF012 wants ClassVar on mutable class attributes, which collides with Django's
+# `class Meta: ordering = [...]`. Scoped to model modules rather than globally or to
+# tests/ -- it currently only fires in tests/testapp/models.py, but Meta is idiomatic
+# in application models too, so a tests-only ignore would break the domain pass.
+"**/models.py" = ["RUF012"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["accounts_receivable", "config", "tests"]

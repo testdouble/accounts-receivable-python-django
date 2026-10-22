@@ -18,17 +18,14 @@ pytestmark = pytest.mark.django_db
 class BareAuthorFactory(DjangoModelFactory[Author]):
     """No declared fields: exercises the adapter's type mapping and constraints."""
 
-    __model__ = Author
-
 
 class BareWidgetFactory(DjangoModelFactory[Widget]):
-    __model__ = Widget
+    """Declares nothing, so its ForeignKey should stay unset."""
 
 
 class AutoFkWidgetFactory(DjangoModelFactory[Widget]):
     """Opts in to implicit ForeignKey resolution."""
 
-    __model__ = Widget
     __set_foreign_keys__ = True
 
 
