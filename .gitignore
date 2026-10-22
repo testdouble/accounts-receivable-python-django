@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Django
+dev.sqlite3
+dev.sqlite3-journal
+dev.sqlite3-shm
+dev.sqlite3-wal
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+
+# macOS
+.DS_Store
