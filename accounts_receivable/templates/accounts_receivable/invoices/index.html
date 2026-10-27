@@ -1,0 +1,61 @@
+{% extends "accounts_receivable/base.html" %}
+
+{% block title %}Invoices{% endblock %}
+{% block breadcrumb %} / invoices{% endblock %}
+
+{% block content %}
+  <div class="mx-auto max-w-5xl">
+    <div class="flex items-start justify-between gap-6">
+      <div>
+        <h1 class="font-serif text-3xl">Invoices</h1>
+        <p class="mt-1.5 text-sm text-gray-600">
+          Bills addressed to a client. Each one totals up its own line items.
+        </p>
+      </div>
+      <a href="{% url 'invoice_create' %}"
+         class="flex-shrink-0 rounded-md bg-brand px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-dark">
+        New invoice
+      </a>
+    </div>
+
+    <div class="mt-6 overflow-hidden rounded-lg border border-hairline bg-white">
+      <div class="border-b border-hairline px-5 py-4">
+        <h2 class="text-sm font-semibold">All invoices</h2>
+        <p class="mt-0.5 text-sm text-gray-500">
+          {{ invoices|length }} invoice{{ invoices|length|pluralize }}
+        </p>
+      </div>
+
+      {% if invoices %}
+        <table class="w-full text-sm">
+          <thead class="bg-[#f8f8f8]">
+            <tr>
+              <th class="px-5 py-2.5 text-left font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Client</th>
+              <th class="px-5 py-2.5 text-left font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Net days</th>
+              <th class="px-5 py-2.5 text-left font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Note</th>
+              <th class="px-5 py-2.5 text-right font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in invoices %}
+              <tr class="border-t border-[#f1f1f1]">
+                <td class="px-5 py-3.5 font-semibold">{{ record.client.name }}</td>
+                <td class="px-5 py-3.5 font-mono text-gray-600">{{ record.net_days }}</td>
+                <td class="px-5 py-3.5 text-gray-700">{{ record.note }}</td>
+                <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                  <a class="text-gray-600 hover:text-ink" href="{% url 'invoice_detail' record.pk %}">Show</a>
+                  <a class="ml-4 text-gray-600 hover:text-ink" href="{% url 'invoice_update' record.pk %}">Edit</a>
+                  <a class="ml-4 text-gray-600 hover:text-ink" href="{% url 'invoice_delete' record.pk %}">Delete</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="px-5 py-8 text-center text-sm text-gray-500">
+          No invoices yet. <a class="text-brand underline" href="{% url 'invoice_create' %}">Add the first one</a>.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

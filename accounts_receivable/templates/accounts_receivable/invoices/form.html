@@ -1,0 +1,47 @@
+{% extends "accounts_receivable/base.html" %}
+
+{% block title %}{{ heading }}{% endblock %}
+{% block breadcrumb %} / invoices / {% if record %}{{ record.pk }} / edit{% else %}new{% endif %}{% endblock %}
+
+{% block content %}
+  <div class="mx-auto max-w-3xl">
+    <h1 class="font-serif text-3xl">{{ heading }}</h1>
+    <p class="mt-1.5 text-sm text-gray-600">{{ subheading }}</p>
+
+    <form method="post" class="mt-6 overflow-hidden rounded-lg border border-hairline bg-white">
+      {% csrf_token %}
+
+      <div class="border-b border-hairline px-5 py-4">
+        <h2 class="text-sm font-semibold">Invoice details</h2>
+        <p class="mt-0.5 text-sm text-gray-500">A client and a payment window are required.</p>
+      </div>
+
+      <div class="grid gap-5 px-5 py-5 sm:grid-cols-2">
+        {% for field in form %}
+          <div>
+            <label for="{{ field.id_for_label }}"
+                   class="block font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">
+              {{ field.label }}
+            </label>
+            <div class="mt-1.5">{{ field }}</div>
+            {% if field.help_text %}
+              <p class="mt-1.5 text-xs text-gray-500">{{ field.help_text }}</p>
+            {% endif %}
+            {% for error in field.errors %}
+              <p class="mt-1.5 text-xs text-red-600">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="flex items-center justify-end gap-3 border-t border-hairline px-5 py-4">
+        <a href="{% if record %}{% url 'invoice_detail' record.pk %}{% else %}{% url 'invoice_list' %}{% endif %}"
+           class="px-3 py-2 text-sm text-gray-600 hover:text-ink">Cancel</a>
+        <button type="submit"
+                class="rounded-md bg-brand px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-dark">
+          {{ submit_label }}
+        </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

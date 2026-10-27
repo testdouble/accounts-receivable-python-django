@@ -1,7 +1,6 @@
 {% comment %}
-  The design's fixed sidebar. Clients, Products and Services are built; Invoices and
-  Line items are rendered as muted, non-clickable items so the shell matches the design
-  without offering links that 404. Turn each into an <a> as its resource lands.
+  The design's fixed sidebar. Every resource in the domain is built, so every item here
+  is a real link; there is no muted placeholder left.
 {% endcomment %}
 <div class="hidden md:fixed md:inset-y-0 md:flex md:w-60 md:flex-col">
   <div class="flex min-h-0 flex-1 flex-col bg-ink">
@@ -38,19 +37,23 @@
         Services
       </a>
 
-      <span class="flex cursor-default items-center gap-3 rounded-lg px-3 py-2 pl-[0.875rem] text-sm text-gray-600" title="Arrives in a later pass">
+      <a href="{% url 'invoice_list' %}"
+         class="flex items-center gap-3 rounded-lg border-l-2 px-3 py-2 text-sm
+                {% if '/invoices' in request.path %}border-brand bg-ink-soft font-medium text-white{% else %}border-transparent text-gray-400 hover:bg-ink-soft hover:text-white{% endif %}">
         <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
         Invoices
-      </span>
+      </a>
 
-      <span class="flex cursor-default items-center gap-3 rounded-lg px-3 py-2 pl-[0.875rem] text-sm text-gray-600" title="Arrives in a later pass">
+      <a href="{% url 'line_item_list' %}"
+         class="flex items-center gap-3 rounded-lg border-l-2 px-3 py-2 text-sm
+                {% if '/line_items' in request.path %}border-brand bg-ink-soft font-medium text-white{% else %}border-transparent text-gray-400 hover:bg-ink-soft hover:text-white{% endif %}">
         <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
         Line items
-      </span>
+      </a>
     </nav>
   </div>
 </div>

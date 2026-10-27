@@ -1,0 +1,26 @@
+{% extends "accounts_receivable/base.html" %}
+
+{% block title %}Delete invoice #{{ record.pk }}{% endblock %}
+{% block breadcrumb %} / invoices / {{ record.pk }} / delete{% endblock %}
+
+{% block content %}
+  <div class="mx-auto max-w-3xl">
+    <h1 class="font-serif text-3xl">Delete invoice</h1>
+    <p class="mt-1.5 text-sm text-gray-600">This cannot be undone.</p>
+
+    <form method="post" class="mt-6 overflow-hidden rounded-lg border border-hairline bg-white">
+      {% csrf_token %}
+      <div class="px-5 py-5 text-sm">
+        Permanently delete <span class="font-semibold">invoice #{{ record.pk }}</span>
+        for <span class="font-semibold">{{ record.client.name }}</span>, along with its
+        {{ record.line_items.count }} line item{{ record.line_items.count|pluralize }}?
+      </div>
+      <div class="flex items-center justify-end gap-3 border-t border-hairline px-5 py-4">
+        <a href="{% url 'invoice_detail' record.pk %}" class="px-3 py-2 text-sm text-gray-600 hover:text-ink">Cancel</a>
+        <button type="submit" class="rounded-md bg-red-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-red-700">
+          Delete invoice
+        </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}
