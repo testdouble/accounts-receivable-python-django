@@ -1,7 +1,7 @@
 {% comment %}
-  The design's fixed sidebar. Only Clients is built; the other four resources are
-  rendered as muted, non-clickable items so the shell matches the design without
-  offering links that 404. Turn each into an <a> as its resource lands.
+  The design's fixed sidebar. Clients, Products and Services are built; Invoices and
+  Line items are rendered as muted, non-clickable items so the shell matches the design
+  without offering links that 404. Turn each into an <a> as its resource lands.
 {% endcomment %}
 <div class="hidden md:fixed md:inset-y-0 md:flex md:w-60 md:flex-col">
   <div class="flex min-h-0 flex-1 flex-col bg-ink">
@@ -20,19 +20,23 @@
         Clients
       </a>
 
-      <span class="flex cursor-default items-center gap-3 rounded-lg px-3 py-2 pl-[0.875rem] text-sm text-gray-600" title="Arrives in a later pass">
+      <a href="{% url 'product_list' %}"
+         class="flex items-center gap-3 rounded-lg border-l-2 px-3 py-2 text-sm
+                {% if '/products' in request.path %}border-brand bg-ink-soft font-medium text-white{% else %}border-transparent text-gray-400 hover:bg-ink-soft hover:text-white{% endif %}">
         <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
         </svg>
         Products
-      </span>
+      </a>
 
-      <span class="flex cursor-default items-center gap-3 rounded-lg px-3 py-2 pl-[0.875rem] text-sm text-gray-600" title="Arrives in a later pass">
+      <a href="{% url 'service_list' %}"
+         class="flex items-center gap-3 rounded-lg border-l-2 px-3 py-2 text-sm
+                {% if '/services' in request.path %}border-brand bg-ink-soft font-medium text-white{% else %}border-transparent text-gray-400 hover:bg-ink-soft hover:text-white{% endif %}">
         <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
         </svg>
         Services
-      </span>
+      </a>
 
       <span class="flex cursor-default items-center gap-3 rounded-lg px-3 py-2 pl-[0.875rem] text-sm text-gray-600" title="Arrives in a later pass">
         <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
