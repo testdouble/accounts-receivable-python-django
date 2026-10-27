@@ -5,8 +5,8 @@ sending, and tracking invoices sent to clients so we can be paid for our product
 services.
 
 > **Status: early domain pass.** The toolchain and every library in the stack are set up
-> and proven by the test suite, and clients are built end to end — model, seed data, and
-> CRUD pages behind the application shell. Products, services, invoices, and line items
+> and proven by the test suite, and clients, products, and services are built end to end —
+> models, seed data, and CRUD pages behind the application shell. Invoices and line items
 > arrive in a later pass.
 
 ## Getting started
@@ -52,7 +52,7 @@ applies migrations. If you would rather run the steps yourself:
 
         $ uv run python manage.py migrate
 
-Optionally load development seed data (two clients, Acme inc and Dunder Mifflin):
+Optionally load development seed data (two clients, two products, and two services):
 
     $ uv run python manage.py seed
 

@@ -1,0 +1,59 @@
+{% extends "accounts_receivable/base.html" %}
+
+{% block title %}Services{% endblock %}
+{% block breadcrumb %} / services{% endblock %}
+
+{% block content %}
+  <div class="mx-auto max-w-5xl">
+    <div class="flex items-start justify-between gap-6">
+      <div>
+        <h1 class="font-serif text-3xl">Services</h1>
+        <p class="mt-1.5 text-sm text-gray-600">
+          Work you bill for. A line item references one product or one service.
+        </p>
+      </div>
+      <a href="{% url 'service_create' %}"
+         class="flex-shrink-0 rounded-md bg-brand px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-dark">
+        New service
+      </a>
+    </div>
+
+    <div class="mt-6 overflow-hidden rounded-lg border border-hairline bg-white">
+      <div class="border-b border-hairline px-5 py-4">
+        <h2 class="text-sm font-semibold">All services</h2>
+        <p class="mt-0.5 text-sm text-gray-500">
+          {{ services|length }} service{{ services|length|pluralize }}
+        </p>
+      </div>
+
+      {% if services %}
+        <table class="w-full text-sm">
+          <thead class="bg-[#f8f8f8]">
+            <tr>
+              <th class="px-5 py-2.5 text-left font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Name</th>
+              <th class="px-5 py-2.5 text-left font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Price cents</th>
+              <th class="px-5 py-2.5 text-right font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in services %}
+              <tr class="border-t border-[#f1f1f1]">
+                <td class="px-5 py-3.5 font-semibold">{{ record.name }}</td>
+                <td class="px-5 py-3.5 font-mono text-gray-600">{{ record.price_cents }}</td>
+                <td class="px-5 py-3.5 text-right">
+                  <a class="text-gray-600 hover:text-ink" href="{% url 'service_detail' record.pk %}">Show</a>
+                  <a class="ml-4 text-gray-600 hover:text-ink" href="{% url 'service_update' record.pk %}">Edit</a>
+                  <a class="ml-4 text-gray-600 hover:text-ink" href="{% url 'service_delete' record.pk %}">Delete</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="px-5 py-8 text-center text-sm text-gray-500">
+          No services yet. <a class="text-brand underline" href="{% url 'service_create' %}">Add the first one</a>.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

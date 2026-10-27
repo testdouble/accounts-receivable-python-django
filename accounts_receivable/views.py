@@ -15,8 +15,8 @@ from django.views.generic import (
     UpdateView,
 )
 
-from accounts_receivable.forms import ClientForm
-from accounts_receivable.models import Client
+from accounts_receivable.forms import ClientForm, ProductForm, ServiceForm
+from accounts_receivable.models import Client, Product, Service
 
 
 class RootRedirectView(RedirectView):
@@ -76,3 +76,93 @@ class ClientDeleteView(SuccessMessageMixin, DeleteView):
     template_name = "accounts_receivable/clients/confirm_delete.html"
     success_message = "Client deleted."
     success_url = reverse_lazy("client_list")
+
+
+class ProductListView(ListView):
+    model = Product
+    context_object_name = "products"
+    template_name = "accounts_receivable/products/index.html"
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    context_object_name = "record"
+    template_name = "accounts_receivable/products/show.html"
+
+
+class ProductCreateView(SuccessMessageMixin, CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = "accounts_receivable/products/form.html"
+    success_message = "Product created."
+    extra_context = {
+        "heading": "New product",
+        "subheading": "Add something you sell by the unit.",
+        "submit_label": "Create product",
+    }
+
+
+class ProductUpdateView(SuccessMessageMixin, UpdateView):
+    model = Product
+    form_class = ProductForm
+    context_object_name = "record"
+    template_name = "accounts_receivable/products/form.html"
+    success_message = "Product updated."
+    extra_context = {
+        "heading": "Edit product",
+        "subheading": "Update this product's name or price.",
+        "submit_label": "Save product",
+    }
+
+
+class ProductDeleteView(SuccessMessageMixin, DeleteView):
+    model = Product
+    context_object_name = "record"
+    template_name = "accounts_receivable/products/confirm_delete.html"
+    success_message = "Product deleted."
+    success_url = reverse_lazy("product_list")
+
+
+class ServiceListView(ListView):
+    model = Service
+    context_object_name = "services"
+    template_name = "accounts_receivable/services/index.html"
+
+
+class ServiceDetailView(DetailView):
+    model = Service
+    context_object_name = "record"
+    template_name = "accounts_receivable/services/show.html"
+
+
+class ServiceCreateView(SuccessMessageMixin, CreateView):
+    model = Service
+    form_class = ServiceForm
+    template_name = "accounts_receivable/services/form.html"
+    success_message = "Service created."
+    extra_context = {
+        "heading": "New service",
+        "subheading": "Add work you bill for.",
+        "submit_label": "Create service",
+    }
+
+
+class ServiceUpdateView(SuccessMessageMixin, UpdateView):
+    model = Service
+    form_class = ServiceForm
+    context_object_name = "record"
+    template_name = "accounts_receivable/services/form.html"
+    success_message = "Service updated."
+    extra_context = {
+        "heading": "Edit service",
+        "subheading": "Update this service's name or price.",
+        "submit_label": "Save service",
+    }
+
+
+class ServiceDeleteView(SuccessMessageMixin, DeleteView):
+    model = Service
+    context_object_name = "record"
+    template_name = "accounts_receivable/services/confirm_delete.html"
+    success_message = "Service deleted."
+    success_url = reverse_lazy("service_list")

@@ -30,9 +30,20 @@ def test_the_shell_does_not_leak_its_template_comment(client: DjangoClient) -> N
     assert b"Tailwind from the CDN" not in response.content
 
 
+def test_built_resources_are_linked(client: DjangoClient) -> None:
+    response = client.get("/clients/")
+    body = response.content.decode()
+
+    assert 'href="/products/"' in body
+    assert 'href="/services/"' in body
+
+
 def test_unbuilt_resources_are_shown_but_not_linked(client: DjangoClient) -> None:
+    """Tracks the shrinking unbuilt set: drop a name here as its resource lands."""
     response = client.get("/clients/")
     body = response.content.decode()
 
     assert "Invoices" in body
+    assert "Line items" in body
     assert 'href="/invoices' not in body
+    assert 'href="/line_items' not in body
