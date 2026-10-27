@@ -15,18 +15,20 @@ from django.views.generic import (
     UpdateView,
 )
 
-from accounts_receivable.forms import ClientForm, ProductForm, ServiceForm
-from accounts_receivable.models import Client, Product, Service
+from accounts_receivable.forms import (
+    ClientForm,
+    InvoiceForm,
+    LineItemForm,
+    ProductForm,
+    ServiceForm,
+)
+from accounts_receivable.models import Client, Invoice, LineItem, Product, Service
 
 
 class RootRedirectView(RedirectView):
-    """Send `/` to the clients index.
+    """Send `/` to the invoices index, as the Rails `root to: redirect("/invoices")` does."""
 
-    The Rails source does `root to: redirect("/invoices")`. Invoices do not exist yet,
-    so clients is the only index there is; point this at invoices once they land.
-    """
-
-    pattern_name = "client_list"
+    pattern_name = "invoice_list"
     permanent = False
 
 
@@ -166,3 +168,127 @@ class ServiceDeleteView(SuccessMessageMixin, DeleteView):
     template_name = "accounts_receivable/services/confirm_delete.html"
     success_message = "Service deleted."
     success_url = reverse_lazy("service_list")
+
+
+class InvoiceListView(ListView):
+    model = Invoice
+    context_object_name = "invoices"
+    template_name = "accounts_receivable/invoices/index.html"
+    # The index prints `record.client.name`; without this it is a query per row.
+    queryset = Invoice.objects.select_related("client")
+
+
+class InvoiceDetailView(DetailView):
+    model = Invoice
+    context_object_name = "record"
+    template_name = "accounts_receivable/invoices/show.html"
+    queryset = Invoice.objects.select_related("client")
+
+    def get_context_data(self, **kwargs: object) -> dict[str, object]:
+        """Split the line items into products and services, and total them.
+
+        A port of `InvoicesController#show`, including its defect. Rails builds the table
+        from::
+
+            line_items.joins(:product).where("products.price_cents != 0") +
+            line_items.joins(:service).where("services.price_cents != 0")
+
+        `filter(product__isnull=False)` is the inner join `joins(:product)` performs, and
+        `exclude(product__price_cents=0)` is the `!= 0` clause. That clause is a
+        **deliberately preserved defect**: a line item priced from a zero-cost product or
+        service silently vanishes from the table and from the total, even when it carries
+        a price override that should bill for it. See CLAUDE.md, "Planted bugs are
+        preserved", and do not quietly drop the `exclude`.
+        """
+        context = super().get_context_data(**kwargs)
+        items = self.object.line_items.select_related("product", "service")
+        products = list(items.filter(product__isnull=False).exclude(product__price_cents=0))
+        services = list(items.filter(service__isnull=False).exclude(service__price_cents=0))
+
+        context["product_items"] = products
+        context["service_items"] = services
+        # `subtotal_cents` is never None here: every row in these two lists has either a
+        # product or a service by construction.
+        context["total_cents"] = sum(item.subtotal_cents for item in products + services)
+
+        return context
+
+
+class InvoiceCreateView(SuccessMessageMixin, CreateView):
+    model = Invoice
+    form_class = InvoiceForm
+    template_name = "accounts_receivable/invoices/form.html"
+    success_message = "Invoice created."
+    extra_context = {
+        "heading": "New invoice",
+        "subheading": "Bill a client. Add line items once the invoice exists.",
+        "submit_label": "Create invoice",
+    }
+
+
+class InvoiceUpdateView(SuccessMessageMixin, UpdateView):
+    model = Invoice
+    form_class = InvoiceForm
+    context_object_name = "record"
+    template_name = "accounts_receivable/invoices/form.html"
+    success_message = "Invoice updated."
+    extra_context = {
+        "heading": "Edit invoice",
+        "subheading": "Change who this invoice bills, its payment window, or its subject.",
+        "submit_label": "Save invoice",
+    }
+
+
+class InvoiceDeleteView(SuccessMessageMixin, DeleteView):
+    model = Invoice
+    context_object_name = "record"
+    template_name = "accounts_receivable/invoices/confirm_delete.html"
+    success_message = "Invoice deleted."
+    success_url = reverse_lazy("invoice_list")
+
+
+class LineItemListView(ListView):
+    model = LineItem
+    context_object_name = "line_items"
+    template_name = "accounts_receivable/line_items/index.html"
+    queryset = LineItem.objects.select_related("invoice", "product", "service")
+
+
+class LineItemDetailView(DetailView):
+    model = LineItem
+    context_object_name = "record"
+    template_name = "accounts_receivable/line_items/show.html"
+    queryset = LineItem.objects.select_related("invoice", "product", "service")
+
+
+class LineItemCreateView(SuccessMessageMixin, CreateView):
+    model = LineItem
+    form_class = LineItemForm
+    template_name = "accounts_receivable/line_items/form.html"
+    success_message = "Line item created."
+    extra_context = {
+        "heading": "New line item",
+        "subheading": "Add a billable row to an invoice, priced from a product or a service.",
+        "submit_label": "Create line item",
+    }
+
+
+class LineItemUpdateView(SuccessMessageMixin, UpdateView):
+    model = LineItem
+    form_class = LineItemForm
+    context_object_name = "record"
+    template_name = "accounts_receivable/line_items/form.html"
+    success_message = "Line item updated."
+    extra_context = {
+        "heading": "Edit line item",
+        "subheading": "Change what this row bills for, how many, or at what price.",
+        "submit_label": "Save line item",
+    }
+
+
+class LineItemDeleteView(SuccessMessageMixin, DeleteView):
+    model = LineItem
+    context_object_name = "record"
+    template_name = "accounts_receivable/line_items/confirm_delete.html"
+    success_message = "Line item deleted."
+    success_url = reverse_lazy("line_item_list")

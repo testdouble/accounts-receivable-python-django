@@ -1,0 +1,74 @@
+{% extends "accounts_receivable/base.html" %}
+{% load money %}
+
+{% block title %}{{ record }}{% endblock %}
+{% block breadcrumb %} / line_items / {{ record.pk }}{% endblock %}
+
+{% block content %}
+  <div class="mx-auto max-w-5xl">
+    <div class="flex items-start justify-between gap-6">
+      <div>
+        <h1 class="font-serif text-3xl">{{ record }}</h1>
+        <p class="mt-1.5 text-sm text-gray-600">Line item record.</p>
+      </div>
+      <div class="flex flex-shrink-0 items-center gap-2">
+        <a href="{% url 'line_item_list' %}" class="rounded-md px-3 py-2 text-sm text-gray-600 hover:text-ink">Back</a>
+        <a href="{% url 'line_item_delete' record.pk %}"
+           class="rounded-md border border-hairline bg-white px-3 py-2 text-sm hover:bg-[#fafafa]">Delete</a>
+        <a href="{% url 'line_item_update' record.pk %}"
+           class="rounded-md bg-brand px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-dark">Edit</a>
+      </div>
+    </div>
+
+    <div class="mt-6 overflow-hidden rounded-lg border border-hairline bg-white">
+      <div class="border-b border-hairline px-5 py-4">
+        <h2 class="text-sm font-semibold">Details</h2>
+        <p class="mt-0.5 text-sm text-gray-500">Line item #{{ record.pk }}</p>
+      </div>
+      <dl class="text-sm">
+        <div class="flex items-center gap-6 border-b border-[#f1f1f1] px-5 py-3.5">
+          <dt class="w-40 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Invoice</dt>
+          <dd class="font-mono">
+            <a class="hover:underline" href="{% url 'invoice_detail' record.invoice.pk %}">#{{ record.invoice.pk }}</a>
+          </dd>
+        </div>
+        <div class="flex items-center gap-6 border-b border-[#f1f1f1] px-5 py-3.5">
+          <dt class="w-40 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Product</dt>
+          <dd class="text-gray-700">
+            {% if record.product %}
+              <a class="hover:underline" href="{% url 'product_detail' record.product.pk %}">{{ record.product.name }}</a>
+            {% endif %}
+          </dd>
+        </div>
+        <div class="flex items-center gap-6 border-b border-[#f1f1f1] px-5 py-3.5">
+          <dt class="w-40 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Service</dt>
+          <dd class="text-gray-700">
+            {% if record.service %}
+              <a class="hover:underline" href="{% url 'service_detail' record.service.pk %}">{{ record.service.name }}</a>
+            {% endif %}
+          </dd>
+        </div>
+        <div class="flex items-center gap-6 border-b border-[#f1f1f1] px-5 py-3.5">
+          <dt class="w-40 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Price override cents</dt>
+          <dd class="font-mono text-gray-700">{{ record.price_override_cents|default_if_none:"--" }}</dd>
+        </div>
+        <div class="flex items-center gap-6 border-b border-[#f1f1f1] px-5 py-3.5">
+          <dt class="w-40 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Unit price</dt>
+          <dd class="font-mono text-gray-700">{{ record.unit_price_cents|to_money }}</dd>
+        </div>
+        <div class="flex items-center gap-6 border-b border-[#f1f1f1] px-5 py-3.5">
+          <dt class="w-40 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Quantity</dt>
+          <dd class="font-mono text-gray-700">{{ record.quantity }}</dd>
+        </div>
+        <div class="flex items-center gap-6 border-b border-[#f1f1f1] px-5 py-3.5">
+          <dt class="w-40 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Subtotal</dt>
+          <dd class="font-mono font-semibold">{{ record.subtotal_cents|to_money }}</dd>
+        </div>
+        <div class="flex items-center gap-6 px-5 py-3.5">
+          <dt class="w-40 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Description</dt>
+          <dd class="font-semibold">{{ record.description }}</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+{% endblock %}

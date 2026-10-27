@@ -4,10 +4,10 @@ Welcome to the Accounts Receivable system! This system is responsible for creati
 sending, and tracking invoices sent to clients so we can be paid for our products and
 services.
 
-> **Status: early domain pass.** The toolchain and every library in the stack are set up
-> and proven by the test suite, and clients, products, and services are built end to end —
-> models, seed data, and CRUD pages behind the application shell. Invoices and line items
-> arrive in a later pass.
+> **Status: domain complete.** All five tables from the Rails source — clients, products,
+> services, invoices, and line items — are built end to end: models, seed data, CRUD pages
+> behind the application shell, and a read-only JSON API. The invoice page prices each
+> line item, subtotals it, and totals the invoice.
 
 ## Getting started
 
@@ -52,7 +52,8 @@ applies migrations. If you would rather run the steps yourself:
 
         $ uv run python manage.py migrate
 
-Optionally load development seed data (two clients, two products, and two services):
+Optionally load development seed data (two clients, two products, two services, and two
+Acme invoices with five line items between them):
 
     $ uv run python manage.py seed
 
@@ -131,6 +132,23 @@ models used only to exercise the adapter, with their factories in
 
 > Never name a pytest fixture `client` — pytest-django reserves it for the Django test
 > client, and this domain's central noun is `Client`.
+
+### Preserved defects
+
+The Rails source is an interview exercise and is **deliberately flawed** in its money and
+total arithmetic. This port reproduces those flaws rather than fixing them, because
+fixing them silently would destroy the exercise. Two sites carry them, each commented and
+covered by tests that assert the wrong answer on purpose:
+
+* `accounts_receivable/templatetags/money.py` — the formatter drops the leading zero
+  below a dollar, omits thousands separators, misplaces a minus sign, and raises
+  `IndexError` under ten cents.
+* `InvoiceDetailView` in `accounts_receivable/views.py` — a line item priced from a
+  zero-cost product or service is dropped from the invoice table and its total.
+
+The JSON API does **not** reproduce the second one: `Invoice.total_cents` is the honest
+sum, and the Rails app has no API for it to be faithful to. The invoice page and
+`GET /api/invoices/<id>` can therefore report different totals, which is intended.
 
 ### Project decisions
 

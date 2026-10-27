@@ -1,0 +1,135 @@
+{% extends "accounts_receivable/base.html" %}
+{% load money %}
+
+{% block title %}Invoice #{{ record.pk }}{% endblock %}
+{% block breadcrumb %} / invoices / {{ record.pk }}{% endblock %}
+
+{% block content %}
+  <div class="mx-auto max-w-5xl">
+    <div class="flex items-start justify-between gap-6">
+      <div>
+        <h1 class="font-serif text-3xl">Invoice #{{ record.pk }}</h1>
+        <p class="mt-1.5 text-sm text-gray-600">{{ record.note }}</p>
+      </div>
+      <div class="flex flex-shrink-0 items-center gap-2">
+        <a href="{% url 'invoice_list' %}" class="rounded-md px-3 py-2 text-sm text-gray-600 hover:text-ink">Back</a>
+        <a href="{% url 'invoice_delete' record.pk %}"
+           class="rounded-md border border-hairline bg-white px-3 py-2 text-sm hover:bg-[#fafafa]">Delete</a>
+        <a href="{% url 'invoice_update' record.pk %}"
+           class="rounded-md bg-brand px-3.5 py-2 text-sm font-medium text-white hover:bg-brand-dark">Edit</a>
+      </div>
+    </div>
+
+    <div class="mt-6 overflow-hidden rounded-lg border border-hairline bg-white">
+      <div class="border-b border-hairline px-5 py-4">
+        <h2 class="text-sm font-semibold">Details</h2>
+        <p class="mt-0.5 text-sm text-gray-500">Net {{ record.net_days }}</p>
+      </div>
+      <dl class="text-sm">
+        <div class="flex items-center gap-6 border-b border-[#f1f1f1] px-5 py-3.5">
+          <dt class="w-28 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Client</dt>
+          <dd class="font-semibold">
+            <a class="hover:underline" href="{% url 'client_detail' record.client.pk %}">{{ record.client.name }}</a>
+          </dd>
+        </div>
+        {% comment %}
+          "Attn" is the label the Rails show page uses for the client's email, and the
+          client form's help text already promises it appears here.
+        {% endcomment %}
+        <div class="flex items-center gap-6 border-b border-[#f1f1f1] px-5 py-3.5">
+          <dt class="w-28 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Attn</dt>
+          <dd class="font-mono text-gray-700">{{ record.client.email }}</dd>
+        </div>
+        <div class="flex items-center gap-6 px-5 py-3.5">
+          <dt class="w-28 flex-shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">Due date</dt>
+          <dd class="font-mono text-gray-700">{{ record.due_date|date:"Y-m-d" }}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="mt-6 overflow-hidden rounded-lg border border-hairline bg-white">
+      <div class="flex items-start justify-between gap-6 border-b border-hairline px-5 py-4">
+        <div>
+          <h2 class="text-sm font-semibold">Line items</h2>
+          <p class="mt-0.5 text-sm text-gray-500">What this invoice bills for.</p>
+        </div>
+        <a href="{% url 'line_item_create' %}"
+           class="flex-shrink-0 rounded-md border border-hairline bg-white px-3 py-1.5 text-sm hover:bg-[#fafafa]">
+          New line item
+        </a>
+      </div>
+
+      {% if product_items or service_items %}
+        <table class="w-full text-sm">
+          <thead class="bg-[#f8f8f8]">
+            <tr>
+              <th class="px-5 py-2.5 text-left font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Description</th>
+              <th class="px-5 py-2.5 text-left font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Name</th>
+              <th class="px-5 py-2.5 text-right font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Unit price</th>
+              <th class="px-5 py-2.5 text-right font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Quantity</th>
+              <th class="px-5 py-2.5 text-right font-mono text-[11px] font-normal uppercase tracking-[0.12em] text-gray-500">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t border-[#f1f1f1] bg-[#fafafa]">
+              <th colspan="5" scope="colgroup"
+                  class="px-5 py-2 text-left font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">
+                Products
+              </th>
+            </tr>
+            {% for item in product_items %}
+              <tr class="border-t border-[#f1f1f1]">
+                <td class="px-5 py-3.5 font-medium">
+                  <a class="hover:underline" href="{% url 'line_item_detail' item.pk %}">{{ item.description }}</a>
+                </td>
+                <td class="px-5 py-3.5 text-gray-700">{{ item.product.name }}</td>
+                <td class="px-5 py-3.5 text-right font-mono text-gray-700">{{ item.unit_price_cents|to_money }}</td>
+                <td class="px-5 py-3.5 text-right font-mono text-gray-600">{{ item.quantity }}</td>
+                <td class="px-5 py-3.5 text-right font-mono text-gray-700">{{ item.subtotal_cents|to_money }}</td>
+              </tr>
+            {% empty %}
+              <tr class="border-t border-[#f1f1f1]">
+                <td colspan="5" class="px-5 py-3.5 text-sm text-gray-500">No products on this invoice.</td>
+              </tr>
+            {% endfor %}
+
+            <tr class="border-t border-[#f1f1f1] bg-[#fafafa]">
+              <th colspan="5" scope="colgroup"
+                  class="px-5 py-2 text-left font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">
+                Services
+              </th>
+            </tr>
+            {% for item in service_items %}
+              <tr class="border-t border-[#f1f1f1]">
+                <td class="px-5 py-3.5 font-medium">
+                  <a class="hover:underline" href="{% url 'line_item_detail' item.pk %}">{{ item.description }}</a>
+                </td>
+                <td class="px-5 py-3.5 text-gray-700">{{ item.service.name }}</td>
+                <td class="px-5 py-3.5 text-right font-mono text-gray-700">{{ item.unit_price_cents|to_money }}</td>
+                <td class="px-5 py-3.5 text-right font-mono text-gray-600">{{ item.quantity }}</td>
+                <td class="px-5 py-3.5 text-right font-mono text-gray-700">{{ item.subtotal_cents|to_money }}</td>
+              </tr>
+            {% empty %}
+              <tr class="border-t border-[#f1f1f1]">
+                <td colspan="5" class="px-5 py-3.5 text-sm text-gray-500">No services on this invoice.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="border-t border-hairline bg-[#f8f8f8]">
+              <th colspan="4" scope="row"
+                  class="px-5 py-3.5 text-right font-mono text-[11px] uppercase tracking-[0.12em] text-gray-500">
+                Total
+              </th>
+              <td class="px-5 py-3.5 text-right font-mono font-semibold">{{ total_cents|to_money }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      {% else %}
+        <p class="px-5 py-8 text-center text-sm text-gray-500">
+          Nothing billed yet. <a class="text-brand underline" href="{% url 'line_item_create' %}">Add a line item</a>.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
