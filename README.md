@@ -4,9 +4,9 @@ Welcome to the Accounts Receivable system! This system is responsible for creati
 sending, and tracking invoices sent to clients so we can be paid for our products and
 services.
 
-> **Status: foundation skeleton.** The toolchain and every library in the stack are set
-> up and proven by the test suite, but no domain features are built yet. Clients,
-> products, services, invoices, and line items arrive in the next pass.
+> **Status: early domain pass.** The toolchain and every library in the stack are set up
+> and proven by the test suite, and the `Client` model is in place. Products, services,
+> invoices, and line items arrive in a later pass.
 
 ## Getting started
 
@@ -50,6 +50,12 @@ applies migrations. If you would rather run the steps yourself:
 4. Apply migrations:
 
         $ uv run python manage.py migrate
+
+Optionally load development seed data (two clients, Acme inc and Dunder Mifflin):
+
+    $ uv run python manage.py seed
+
+That command is safe to re-run; it will not duplicate rows.
 
 Then start the server:
 
@@ -118,5 +124,14 @@ models; its own behaviour is covered by `tests/test_django_factory.py`, and its
 deviations from FactoryBot are documented in the module docstring. Pydantic schemas
 need no adapter — PolyFactory supports them natively.
 
-`tests/testapp/` holds throwaway models used only to exercise that adapter. They are
-not domain models.
+Domain factories live in `tests/factories/domain.py`. `tests/testapp/` holds throwaway
+models used only to exercise the adapter, with their factories in
+`tests/factories/models.py`; neither is part of the domain.
+
+> Never name a pytest fixture `client` — pytest-django reserves it for the Django test
+> client, and this domain's central noun is `Client`.
+
+### Project decisions
+
+`CLAUDE.md` records the standing decisions behind this project, including the one that
+shapes the most code: this application will never have authentication or login sessions.
