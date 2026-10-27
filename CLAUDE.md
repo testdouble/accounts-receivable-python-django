@@ -63,6 +63,26 @@ reserves `client` for the Django test client, and this domain's central noun is 
 — shadowing it breaks every view test in a baffling way. Use `acme`, `clients`, or a
 similar name instead.
 
+The same collision bites on the import side. A view test needs both `Client` the model
+and `Client` the test client, and the obvious alias is a trap: `from django.test import
+Client as TestClient` makes pytest try to **collect** `TestClient` as a test class, and
+the whole module errors out during collection. Alias it to something that does not start
+with `Test` — these tests use `DjangoClient`.
+
+## UI and templates
+
+Pages follow the design prototype: a fixed dark (`#1a1a1a`) sidebar, a monospace
+breadcrumb bar, serif page titles, and white cards with a `#e4e4e4` hairline border. The
+teal is `#0d6e6e`, declared once as `brand` in the Tailwind CDN config in `base.html`
+rather than repeated as an arbitrary value.
+
+Nav items for resources that do not exist yet render as muted, non-clickable `<span>`s,
+so the shell matches the design without offering links that 404. Turn each into an `<a>`
+as its resource lands.
+
+**Django template comments are single-line.** `{# ... #}` spanning two lines is served to
+the browser verbatim; use `{% comment %}` blocks for anything longer than one line.
+
 ## Seed data
 
 `uv run python manage.py seed` loads development data and is safe to re-run: it uses

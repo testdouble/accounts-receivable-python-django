@@ -5,6 +5,7 @@ pass; this one covers `clients`.
 """
 
 from django.db import models
+from django.urls import reverse
 
 
 class Client(models.Model):
@@ -25,3 +26,7 @@ class Client(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def get_absolute_url(self) -> str:
+        """Where create and update land, matching the Rails scaffold's redirect."""
+        return reverse("client_detail", kwargs={"pk": self.pk})

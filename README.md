@@ -5,8 +5,9 @@ sending, and tracking invoices sent to clients so we can be paid for our product
 services.
 
 > **Status: early domain pass.** The toolchain and every library in the stack are set up
-> and proven by the test suite, and the `Client` model is in place. Products, services,
-> invoices, and line items arrive in a later pass.
+> and proven by the test suite, and clients are built end to end — model, seed data, and
+> CRUD pages behind the application shell. Products, services, invoices, and line items
+> arrive in a later pass.
 
 ## Getting started
 

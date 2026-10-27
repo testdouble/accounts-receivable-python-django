@@ -56,7 +56,13 @@ select = ["E", "W", "F", "I", "N", "UP", "B", "A", "C4", "DJ", "DTZ", "PT", "SIM
 # `class Meta: ordering = [...]`. Scoped to model modules rather than globally or to
 # tests/ -- it currently only fires in tests/testapp/models.py, but Meta is idiomatic
 # in application models too, so a tests-only ignore would break the domain pass.
+#
+# Forms and views carry the same shape for the same reason: a ModelForm's
+# `class Meta: fields = [...]` and a CBV's `extra_context = {...}` are the documented
+# Django spelling, and ClassVar on every one of them is noise.
 "**/models.py" = ["RUF012"]
+"**/forms.py" = ["RUF012"]
+"**/views.py" = ["RUF012"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["accounts_receivable", "config", "tests"]
