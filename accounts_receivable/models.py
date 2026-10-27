@@ -1,6 +1,32 @@
-"""Domain models.
+"""Domain models ported from the Rails source app.
 
-Intentionally empty: this pass sets up the foundation only. The five tables ported
-from the Rails source app (clients, products, services, invoices, line_items) land in
-the domain pass.
+The remaining four tables (products, services, invoices, line_items) land in a later
+pass; this one covers `clients`.
 """
+
+from django.db import models
+from django.urls import reverse
+
+
+class Client(models.Model):
+    """A customer who receives invoices.
+
+    The Rails source declares `name` and `email` as `string, null: false` with no length
+    cap -- SQLite ignores varchar limits. Django requires `max_length`, so the caps below
+    are a port artifact rather than a domain rule.
+    """
+
+    name = models.CharField(max_length=120)
+    email = models.EmailField(max_length=254)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self) -> str:
+        return self.name
+
+    def get_absolute_url(self) -> str:
+        """Where create and update land, matching the Rails scaffold's redirect."""
+        return reverse("client_detail", kwargs={"pk": self.pk})

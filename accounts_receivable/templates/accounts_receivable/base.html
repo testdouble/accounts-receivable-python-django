@@ -1,28 +1,59 @@
 {% load static %}<!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-100">
+<html lang="en" class="h-full bg-[#fafafa]">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}AccountsReceivable{% endblock %}</title>
-    {# Tailwind from the CDN, matching the Rails and .NET ports. The TailwindUI
-       sidebar/topbar application shell arrives with the domain pass. #}
+    {% comment %}
+      Tailwind from the CDN, matching the Rails and .NET ports. The palette below is
+      sampled from the design prototype; `brand` is its teal, `ink` the sidebar.
+      Note: `{# ... #}` is single-line only in the DTL, so this block is a
+      {% templatetag openblock %} comment {% templatetag closeblock %} -- the old
+      two-line `{#` version was served to the browser verbatim.
+    {% endcomment %}
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: { DEFAULT: "#0d6e6e", dark: "#0a5757" },
+              ink: { DEFAULT: "#1a1a1a", soft: "#2a2a2a" },
+              hairline: "#e4e4e4",
+            },
+            fontFamily: {
+              serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+            },
+          },
+        },
+      };
+    </script>
   </head>
-  <body class="h-full">
+  <body class="h-full text-ink">
     <div class="min-h-full">
-      {% if messages %}
-        <div class="mx-auto max-w-3xl px-4 pt-6">
-          {% for message in messages %}
-            <div class="mb-4 rounded-md bg-yellow-50 p-4 text-sm text-yellow-800">
-              <strong class="font-medium">{{ message.tags|upper }}</strong>
-              {{ message }}
-            </div>
-          {% endfor %}
+      {% include "accounts_receivable/_sidebar.html" %}
+
+      <div class="md:pl-60">
+        <div class="border-b border-hairline bg-white px-6 py-3">
+          <p class="font-mono text-xs text-gray-500">
+            accounts-receivable{% block breadcrumb %}{% endblock %}
+          </p>
         </div>
-      {% endif %}
-      <main class="mx-auto max-w-3xl px-4 py-10">
-        {% block content %}{% endblock %}
-      </main>
+
+        {% if messages %}
+          <div class="px-6 pt-6">
+            {% for message in messages %}
+              <div class="mb-3 rounded-md border border-hairline bg-white px-4 py-3 text-sm text-gray-700">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <main class="px-6 py-8">
+          {% block content %}{% endblock %}
+        </main>
+      </div>
     </div>
   </body>
 </html>
