@@ -173,20 +173,9 @@ class LineItem(models.Model):
         return self.description or f"Line item #{self.pk}"
 
     def get_absolute_url(self) -> str:
-        """Where create and update land, matching the Rails scaffold's redirect."""
         return reverse("line_item_detail", kwargs={"pk": self.pk})
 
     def clean(self) -> None:
-        """Port of `LineItem#must_be_product_or_service`.
-
-        The messages are the Rails ones verbatim, because `spec/models/line_item_spec.rb`
-        asserts on their text. Rails adds them to `:base`, so they are non-field errors
-        here too.
-
-        NOTE: Rails runs validations inside `save`; Django's `Model.save()` does not call
-        `clean()`. The rule therefore binds at the form layer (`ModelForm._post_clean`
-        calls this), and direct ORM writes -- including the test factory -- bypass it.
-        """
         if self.product_id is None and self.service_id is None:
             raise ValidationError("A line item must be either a product or a service")
 
@@ -195,13 +184,6 @@ class LineItem(models.Model):
 
     @property
     def unit_price_cents(self) -> int | None:
-        """The override if there is one, otherwise the product's or service's price.
-
-        The Rails source writes this inline as `price_override_cents || product.price_cents`.
-        Ruby's `||` only falls through on `nil`, so an override of **0** is honoured
-        there. Python's `or` and the DTL's `|default:` both treat 0 as falsy and would
-        silently charge the catalog price instead, so the test below is `is not None`.
-        """
         if self.price_override_cents is not None:
             return self.price_override_cents
 
@@ -211,7 +193,6 @@ class LineItem(models.Model):
 
     @property
     def subtotal_cents(self) -> int | None:
-        """Unit price times quantity, or None when neither a product nor a service is set."""
         unit_price = self.unit_price_cents
 
         return None if unit_price is None else unit_price * self.quantity
