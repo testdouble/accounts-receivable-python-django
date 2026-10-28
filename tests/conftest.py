@@ -8,7 +8,7 @@ def _deterministic_random() -> None:
 
     NOTE: pytest-django reserves the `client` fixture for the Django test client, and
     this domain's central noun is `Client`. Name domain fixtures something else (e.g.
-    `acme`) or every view test breaks in a baffling way.
+    `acme`).
     """
     BaseFactory.__faker__.seed_instance(20170911)
     BaseFactory.__random__.seed(20170911)

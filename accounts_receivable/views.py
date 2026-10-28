@@ -1,8 +1,4 @@
-"""Views for the domain models.
-
-Plain Django class-based views: the Rails source is scaffold-generated CRUD, and the
-generic views are the closest Django equivalent of `resources :clients`.
-"""
+"""Views for the domain models."""
 
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
@@ -26,7 +22,7 @@ from accounts_receivable.models import Client, Invoice, LineItem, Product, Servi
 
 
 class RootRedirectView(RedirectView):
-    """Send `/` to the invoices index, as the Rails `root to: redirect("/invoices")` does."""
+    """Send `/` to the invoices index."""
 
     pattern_name = "invoice_list"
     permanent = False
@@ -185,21 +181,7 @@ class InvoiceDetailView(DetailView):
     queryset = Invoice.objects.select_related("client")
 
     def get_context_data(self, **kwargs: object) -> dict[str, object]:
-        """Split the line items into products and services, and total them.
-
-        A port of `InvoicesController#show`, including its defect. Rails builds the table
-        from::
-
-            line_items.joins(:product).where("products.price_cents != 0") +
-            line_items.joins(:service).where("services.price_cents != 0")
-
-        `filter(product__isnull=False)` is the inner join `joins(:product)` performs, and
-        `exclude(product__price_cents=0)` is the `!= 0` clause. That clause is a
-        **deliberately preserved defect**: a line item priced from a zero-cost product or
-        service silently vanishes from the table and from the total, even when it carries
-        a price override that should bill for it. See CLAUDE.md, "Planted bugs are
-        preserved", and do not quietly drop the `exclude`.
-        """
+        """Split the line items into products and services, and total them."""
         context = super().get_context_data(**kwargs)
         items = self.object.line_items.select_related("product", "service")
         products = list(items.filter(product__isnull=False).exclude(product__price_cents=0))

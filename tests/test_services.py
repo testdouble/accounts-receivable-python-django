@@ -97,12 +97,7 @@ def test_create_redisplays_an_invalid_form(client: DjangoClient) -> None:
 
 
 def test_create_accepts_a_negative_price(client: DjangoClient) -> None:
-    """A credit is enterable, as in the Rails source.
-
-    `t.integer` there is signed and the model body is empty, so nothing rejects a
-    negative price. Asserted through the form so a later pass does not quietly add a
-    validator and call it a bug fix.
-    """
+    """A credit is enterable: nothing rejects a negative price."""
     response = client.post("/services/new/", {"name": "Credit", "price_cents": "-8000"})
 
     assert response.status_code == 302

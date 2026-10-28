@@ -1,21 +1,19 @@
 """A Django adapter for PolyFactory.
 
 PolyFactory 3.5.0 ships support for Pydantic, attrs, msgspec, beanie, odmantic and
-SQLAlchemy -- and *no* Django support. There is no `DjangoModelFactory`, so it cannot
-fill the FactoryBot role for Django ORM models as shipped. `BaseFactory` only declares
-two abstract methods, though, so the adapter is small; `get_model_fields()` is where
-all the real work lives.
+SQLAlchemy -- and no Django support. There is no `DjangoModelFactory`, hence this
+adapter. `BaseFactory` only declares two abstract methods, though, so the adapter is
+small; `get_model_fields()` is where all the real work lives.
 
-Known deviations from FactoryBot, all deliberate:
+Behaviour notes:
 
 * Associations declared as `Use(ParentFactory.create_sync)` are **persisted even when
-  you call `.build()`**. Django needs a saved target for a ForeignKey to be usable, so
-  this is the right trade -- but it is not FactoryBot's semantics and it will surprise
-  someone. Pass an instance yourself to avoid it.
-* **No reverse-relation support.** FactoryBot's `create(:invoice, line_items: [...])`
-  has no equivalent: `get_model_fields` filters to `models.Field`, which excludes
-  reverse descriptors. Build multi-object graphs with plain ORM helpers instead.
-* **No `sequence` equivalent.** PolyFactory v3 removed `Fixture` and has no counter, so
+  you call `.build()`**. Django needs a saved target for a ForeignKey to be usable.
+  Pass an instance yourself to avoid it.
+* **No reverse-relation support.** `get_model_fields` filters to `models.Field`, which
+  excludes reverse descriptors. Build multi-object graphs with plain ORM helpers
+  instead.
+* **No sequence counter.** PolyFactory v3 removed `Fixture` and has no counter, so
   uniqueness relies on Faker's randomness. A `UniqueConstraint` would need a
   hand-rolled counter.
 * `__check_model__` defaults to True in v3, so declared fields must match model field
@@ -202,8 +200,7 @@ class DjangoModelFactory[T: models.Model](BaseFactory[T]):
         """Skip undeclared ForeignKeys unless __set_foreign_keys__ is on.
 
         The base implementation already returns False when the caller passed the field
-        as a kwarg, which is what gives us FactoryBot's association-override semantics
-        for free.
+        as a kwarg, so caller-supplied associations win over declared ones.
         """
         if not super().should_set_field_value(field_meta, **kwargs):
             return False

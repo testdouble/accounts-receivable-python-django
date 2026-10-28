@@ -1,7 +1,6 @@
 """Read-only endpoints for the two catalog tables, products and services.
 
-Read-only on purpose: the Rails source has no JSON API at all, so write endpoints would
-be invention rather than port. Data entry happens through the app's own CRUD pages.
+Read-only on purpose: data entry happens through the app's own CRUD pages.
 
 One module for both routers because the app is organised per layer (`models.py`,
 `views.py`, `forms.py`) rather than per resource.

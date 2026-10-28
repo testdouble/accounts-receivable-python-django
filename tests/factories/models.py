@@ -1,8 +1,4 @@
-"""Factories for the throwaway test models, demonstrating the Django adapter.
-
-The real domain factories (clients, products, services, invoices, line items) follow
-this shape in the domain pass.
-"""
+"""Factories for the throwaway test models, demonstrating the Django adapter."""
 
 from polyfactory import Use
 from polyfactory.factories.base import BaseFactory
@@ -18,16 +14,14 @@ class AuthorFactory(DjangoModelFactory[Author]):
 
     name = Use(faker.name)
     # The adapter maps EmailField -> str via the CharField MRO fallback, which would
-    # generate a random string rather than an address. Declare it, exactly as the Rails
-    # FactoryBot definition declared `Faker::Internet.email`.
+    # generate a random string rather than an address, so declare it.
     email = Use(faker.email)
 
 
 class WidgetFactory(DjangoModelFactory[Widget]):
     __set_as_default_factory_for_type__ = True
 
-    # The FactoryBot "implicit association", made explicit. Persisted even under
-    # .build() -- see the note in tests/factories/base.py.
+    # Persisted even under .build() -- see the note in tests/factories/base.py.
     author = Use(AuthorFactory.create_sync)
     name = Use(faker.word)
     price_cents = Use(lambda: BaseFactory.__random__.randint(100, 999_900))

@@ -31,8 +31,6 @@ class ClientForm(forms.ModelForm):
 
 
 class ProductForm(forms.ModelForm):
-    # No label override for `price_cents`: Django's default is "Price cents", which is
-    # also what the Rails views print, verbatim.
     class Meta:
         model = Product
         fields = ["name", "price_cents"]
@@ -59,8 +57,6 @@ class ServiceForm(forms.ModelForm):
 
 
 class InvoiceForm(forms.ModelForm):
-    # Fields and their order are the Rails strong parameters verbatim:
-    # `params.require(:invoice).permit(:client_id, :net_days, :note)`.
     class Meta:
         model = Invoice
         fields = ["client", "net_days", "note"]
@@ -81,12 +77,9 @@ class InvoiceForm(forms.ModelForm):
 
 
 class LineItemForm(forms.ModelForm):
-    # `params.require(:line_item).permit(:invoice_id, :product_id, :service_id,
-    # :price_override_cents, :quantity, :description)`, in that order.
-    #
-    # Product and service both offer a blank option -- Rails' `include_blank: true` --
-    # because exactly one of them is set. The model's `clean()` enforces that, and its
-    # message arrives as a non-field error, which `line_items/form.html` renders.
+    # Product and service both offer a blank option because exactly one of them is set.
+    # The model's `clean()` enforces that, and its message arrives as a non-field error,
+    # which `line_items/form.html` renders.
     class Meta:
         model = LineItem
         fields = [

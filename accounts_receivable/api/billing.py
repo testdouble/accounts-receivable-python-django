@@ -1,7 +1,7 @@
 """Read-only endpoints for the two billing tables, invoices and line items.
 
-Read-only for the same reason as `catalog.py`: the Rails source has no JSON API at all,
-so write endpoints would be invention rather than port.
+Read-only for the same reason as `catalog.py`: data entry happens through the app's own
+CRUD pages.
 """
 
 from django.db.models import QuerySet

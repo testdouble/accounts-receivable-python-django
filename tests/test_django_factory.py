@@ -106,7 +106,7 @@ def test_declared_association_is_persisted() -> None:
 
 
 def test_passing_an_association_uses_it_and_creates_no_extra_parent() -> None:
-    """FactoryBot's override semantics, which PolyFactory gives us for free.
+    """Caller-supplied associations win over declared ones.
 
     should_set_field_value() returns `field_meta.name not in kwargs`, so the declared
     Use(...) callable never runs when the caller supplies the value.

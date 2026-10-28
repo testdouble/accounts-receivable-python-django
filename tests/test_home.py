@@ -7,7 +7,6 @@ pytestmark = pytest.mark.django_db
 
 
 def test_root_redirects_to_the_invoices_index(client: DjangoClient) -> None:
-    """The Rails source does `root to: redirect("/invoices")`."""
     response = client.get("/")
 
     assert response.status_code == 302
@@ -24,18 +23,14 @@ def test_the_shell_renders_the_sidebar(client: DjangoClient) -> None:
 
 
 def test_the_shell_does_not_leak_its_template_comment(client: DjangoClient) -> None:
-    """`{# ... #}` is single-line only, so the old two-line comment was served verbatim."""
+    """`{# ... #}` is single-line only; a multi-line comment needs `{% comment %}`."""
     response = client.get("/clients/")
 
     assert b"Tailwind from the CDN" not in response.content
 
 
 def test_every_resource_is_linked(client: DjangoClient) -> None:
-    """Every resource in the domain is built, so no nav item is a muted placeholder.
-
-    This replaces the old `test_unbuilt_resources_are_shown_but_not_linked`, which
-    tracked the shrinking unbuilt set. That set is now empty.
-    """
+    """Every resource in the domain is built, so no nav item is a muted placeholder."""
     response = client.get("/clients/")
     body = response.content.decode()
 

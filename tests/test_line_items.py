@@ -40,7 +40,6 @@ def test_factory_persists_a_line_item() -> None:
 
 
 def test_quantity_defaults_to_one() -> None:
-    """`t.integer "quantity", default: 1, null: false` in the Rails schema."""
     item = LineItem.objects.create(
         invoice=InvoiceFactory.create_sync(), product=ProductFactory.create_sync()
     )
@@ -84,10 +83,8 @@ def test_an_override_beats_the_catalog_price() -> None:
 def test_an_override_of_zero_is_honoured() -> None:
     """A free line, not a missing override.
 
-    Rails' `price_override_cents || service.price_cents` honours 0, because Ruby's `||`
-    only falls through on nil. Python's `or` and the DTL's `|default:` both treat 0 as
-    falsy and would charge the catalog price instead, so `unit_price_cents` tests
-    `is not None`. This test is what stops that regression.
+    `unit_price_cents` tests `is not None` rather than truthiness, so an override of 0
+    is honoured instead of falling through to the catalog price.
     """
     programming = ServiceFactory.create_sync(price_cents=8000)
     item = LineItemFactory.create_sync(service=programming, price_override_cents=0)
@@ -137,7 +134,6 @@ def test_a_service_alone_is_valid() -> None:
 
 
 def test_neither_a_product_nor_a_service_is_invalid() -> None:
-    """The Rails message verbatim; `spec/models/line_item_spec.rb` asserts on its text."""
     form = LineItemForm(_form_data())
 
     assert not form.is_valid()

@@ -48,7 +48,6 @@ def test_invoice_str_is_its_number() -> None:
 
 
 def test_net_days_defaults_to_thirty() -> None:
-    """`t.integer "net_days", default: 30, null: false` in the Rails schema."""
     acme = ClientFactory.create_sync()
     invoice = Invoice.objects.create(client=acme)
 
@@ -56,7 +55,6 @@ def test_net_days_defaults_to_thirty() -> None:
 
 
 def test_due_date_is_net_days_after_creation() -> None:
-    """The Rails show page prints `created_at.to_date + net_days`."""
     invoice = InvoiceFactory.create_sync(net_days=45)
 
     assert invoice.due_date == invoice.created_at.date() + dt.timedelta(days=45)
@@ -78,10 +76,6 @@ def test_total_cents_sums_every_line_item() -> None:
 
 
 def test_total_cents_counts_a_zero_priced_line_item_the_page_would_drop() -> None:
-    """The model's total is honest; `InvoiceDetailView`'s preserved defect is not.
-
-    The two are meant to disagree -- see `Invoice.total_cents` and the view's docstring.
-    """
     invoice = InvoiceFactory.create_sync()
     freebie = ProductFactory.create_sync(price_cents=0)
     LineItemFactory.create_sync(
@@ -96,7 +90,6 @@ def test_total_cents_is_zero_for_an_empty_invoice() -> None:
 
 
 def test_deleting_an_invoice_deletes_its_line_items() -> None:
-    """Rails declares `has_many :line_items, dependent: :destroy`."""
     invoice = InvoiceFactory.create_sync()
     LineItemFactory.create_sync(invoice=invoice, product=ProductFactory.create_sync())
 
@@ -106,7 +99,6 @@ def test_deleting_an_invoice_deletes_its_line_items() -> None:
 
 
 def test_deleting_an_invoiced_client_is_refused() -> None:
-    """The Rails foreign key does not cascade, so destroying the client raises there too."""
     acme = ClientFactory.create_sync()
     InvoiceFactory.create_sync(client=acme)
 
@@ -151,7 +143,6 @@ def test_index_handles_having_no_invoices(client: DjangoClient) -> None:
 
 
 def test_detail_shows_the_client_and_the_due_date(client: DjangoClient) -> None:
-    """`spec/requests/invoices_spec.rb` checks for the client; the page also prints Attn."""
     acme = ClientFactory.create_sync(name="Acme inc", email="ap@acme.com")
     invoice = InvoiceFactory.create_sync(client=acme, net_days=30)
 
@@ -189,7 +180,6 @@ def test_detail_totals_products_and_services_together(client: DjangoClient) -> N
 
 
 def test_detail_prefers_the_override_to_the_catalog_price(client: DjangoClient) -> None:
-    """Justin's discount row from the Rails seed: $40.00 instead of Programming's $80.00."""
     invoice = InvoiceFactory.create_sync()
     programming = ServiceFactory.create_sync(name="Programming", price_cents=8000)
     LineItemFactory.create_sync(
@@ -207,12 +197,6 @@ def test_detail_prefers_the_override_to_the_catalog_price(client: DjangoClient) 
 def test_detail_drops_a_line_item_priced_from_a_zero_cost_catalog_row(
     client: DjangoClient,
 ) -> None:
-    """A preserved defect, asserted on purpose. See CLAUDE.md, "Planted bugs are preserved".
-
-    `InvoicesController#show` filters with `where("products.price_cents != 0")`, so a
-    line item whose product costs nothing disappears from the table and from the total
-    -- even here, where a price override says to bill $500.00 for it.
-    """
     invoice = InvoiceFactory.create_sync()
     freebie = ProductFactory.create_sync(name="Complimentary onboarding", price_cents=0)
     LineItemFactory.create_sync(
@@ -232,12 +216,6 @@ def test_detail_drops_a_line_item_priced_from_a_zero_cost_catalog_row(
 
 
 def test_detail_breaks_on_a_line_item_priced_under_a_dime(client: DjangoClient) -> None:
-    """A preserved defect, asserted on purpose. See CLAUDE.md, "Planted bugs are preserved".
-
-    `to_money` raises on any amount under ten cents, and nothing in the template catches
-    it, so a cheap enough catalog row takes the whole invoice page down. The Rails app
-    does the same. The raise is the assertion -- `tests/test_money.py` has the detail.
-    """
     invoice = InvoiceFactory.create_sync()
     cheap = ServiceFactory.create_sync(price_cents=5)
     LineItemFactory.create_sync(invoice=invoice, service=cheap, quantity=1)

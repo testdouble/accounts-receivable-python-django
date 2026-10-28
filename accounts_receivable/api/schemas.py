@@ -18,8 +18,7 @@ class HealthOut(Schema):
 class ProductOut(Schema):
     """Response schema for a product.
 
-    `price_cents` is serialised as the integer it is stored as, matching what the Rails
-    views print.
+    `price_cents` is serialised as the integer it is stored as.
     """
 
     id: int
@@ -28,7 +27,7 @@ class ProductOut(Schema):
 
 
 class ServiceOut(Schema):
-    """Response schema for a service. Same shape as `ProductOut`, as in the schema."""
+    """Response schema for a service. Same shape as `ProductOut`."""
 
     id: int
     name: str
@@ -38,14 +37,8 @@ class ServiceOut(Schema):
 class InvoiceOut(Schema):
     """Response schema for an invoice.
 
-    `subject` and `issue_date` are not columns: the Rails schema has `note` and
-    `created_at`, and this serialises what is stored. `due_date` and `total_cents` are
-    derived, and are the two values a consumer would otherwise have to recompute.
-
-    NOTE: `total_cents` is `Invoice.total_cents`, the honest sum of every line item. The
-    invoice *page* can print less, because `InvoiceDetailView` preserves the Rails defect
-    that drops line items priced from a zero-cost product or service. The API has no
-    Rails counterpart to be faithful to, so it does not reproduce that filter.
+    `due_date` and `total_cents` are derived, and are the two values a consumer would
+    otherwise have to recompute.
     """
 
     id: int
@@ -61,8 +54,7 @@ class LineItemOut(Schema):
 
     `product_id` and `service_id` are mutually exclusive; exactly one is set.
     `unit_price_cents` is the override when there is one and the catalog price otherwise,
-    so a consumer does not have to re-derive the fallback -- including the easily-missed
-    case of an override of 0.
+    so a consumer does not have to re-derive the fallback.
     """
 
     id: int

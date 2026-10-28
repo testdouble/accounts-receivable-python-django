@@ -1,4 +1,4 @@
-"""The Django counterpart of the Rails source's `app/helpers/invoices_helper.rb`."""
+"""Money formatting template filters."""
 
 from django import template
 

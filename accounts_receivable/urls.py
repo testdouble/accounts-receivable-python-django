@@ -51,8 +51,6 @@ urlpatterns = [
     path("invoices/<int:pk>/", InvoiceDetailView.as_view(), name="invoice_detail"),
     path("invoices/<int:pk>/edit/", InvoiceUpdateView.as_view(), name="invoice_update"),
     path("invoices/<int:pk>/delete/", InvoiceDeleteView.as_view(), name="invoice_delete"),
-    # `line_items` with an underscore, not a hyphen: it is the path Rails' `resources
-    # :line_items` generates, and the other ports use it too.
     path("line_items/", LineItemListView.as_view(), name="line_item_list"),
     path("line_items/new/", LineItemCreateView.as_view(), name="line_item_create"),
     path("line_items/<int:pk>/", LineItemDetailView.as_view(), name="line_item_detail"),

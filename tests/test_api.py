@@ -134,12 +134,6 @@ def test_one_invoice_is_retrieved(client: Client) -> None:
 
 @pytest.mark.django_db
 def test_an_invoice_total_counts_a_zero_priced_line_item(client: Client) -> None:
-    """The API total is honest where the invoice page's is not.
-
-    `InvoiceDetailView` preserves the Rails defect that drops line items priced from a
-    zero-cost product; the API has no Rails counterpart, so it does not. The two
-    deliberately disagree -- see `InvoiceOut`.
-    """
     invoice = InvoiceFactory.create_sync()
     freebie = ProductFactory.create_sync(price_cents=0)
     LineItemFactory.create_sync(

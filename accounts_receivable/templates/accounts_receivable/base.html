@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}AccountsReceivable{% endblock %}</title>
     {% comment %}
-      Tailwind from the CDN, matching the Rails and .NET ports. The palette below is
-      sampled from the design prototype; `brand` is its teal, `ink` the sidebar.
+      Tailwind from the CDN. The palette below is sampled from the design prototype;
+      `brand` is its teal, `ink` the sidebar.
       Note: `{# ... #}` is single-line only in the DTL, so this block is a
-      {% templatetag openblock %} comment {% templatetag closeblock %} -- the old
-      two-line `{#` version was served to the browser verbatim.
+      {% templatetag openblock %} comment {% templatetag closeblock %}.
     {% endcomment %}
     <script src="https://cdn.tailwindcss.com"></script>
     <script>

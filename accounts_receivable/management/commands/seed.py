@@ -1,8 +1,7 @@
-"""Development seed data, ported from the Rails source app's `db/seeds.rb`.
+"""Development seed data.
 
 A management command rather than a fixture loaded with `loaddata`: fixtures pin primary
-keys and overwrite rows on every load, while `get_or_create` is the direct counterpart of
-the Rails seed's `find_or_create_by` and leaves existing rows alone.
+keys and overwrite rows on every load, while `get_or_create` leaves existing rows alone.
 """
 
 from django.core.management.base import BaseCommand
@@ -10,15 +9,11 @@ from django.db import models
 
 from accounts_receivable.models import Client, Invoice, LineItem, Product, Service
 
-# "Acme inc" / ap@acme.com is verbatim from the Rails seed; the second client follows the
-# same `ap@` (accounts payable) convention.
 CLIENTS = [
     ("Acme inc", {"email": "ap@acme.com"}),
     ("Dunder Mifflin", {"email": "ap@dundermifflin.com"}),
 ]
 
-# Products and services are verbatim from the Rails seed, prices included: there it
-# writes them as `200_00` and `1000_00`, i.e. dollars with an underscore before the cents.
 PRODUCTS = [
     ("Anti-virus software", {"price_cents": 20000}),
     ("Serverless servers", {"price_cents": 100000}),
@@ -29,15 +24,14 @@ SERVICES = [
     ("Refactoring", {"price_cents": 35000}),
 ]
 
-# The Rails seed bills both of these to Acme, the first client. Net 30 on both.
+# Both are billed to Acme, the first client. Net 30 on both.
 INVOICES = [
     "Invoice for writing software for Acme",
     "Invoice for refactoring software for Acme",
 ]
 
-# (invoice note, product name, service name, defaults) -- verbatim from the Rails seed,
-# including Justin's price override, which is the one row that exercises the override
-# path on the invoice page.
+# (invoice note, product name, service name, defaults). Justin's price override is the
+# one row that exercises the override path on the invoice page.
 LINE_ITEMS = [
     (
         INVOICES[0],
@@ -100,8 +94,7 @@ class Command(BaseCommand):
     ) -> None:
         for name, defaults in rows:
             # Keyed on name alone, with everything else in `defaults`, so correcting an
-            # address or a price later does not seed a duplicate row. The Rails seed keys
-            # `find_or_create_by` on the price too, which would.
+            # address or a price later does not seed a duplicate row.
             _, created = model.objects.get_or_create(name=name, defaults=defaults)
 
             if created:

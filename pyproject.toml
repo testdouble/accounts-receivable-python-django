@@ -1,7 +1,7 @@
 [project]
 name = "accounts-receivable"
 version = "0.1.0"
-description = "Accounts Receivable - a Django port of the Rails accounts-receivable app"
+description = "Accounts Receivable - a Django application for creating and tracking invoices"
 readme = "README.md"
 # Lower bound tracks .tool-versions; the upper bound pre-authorises the Python 3.15
 # bump (gated on Django 6.1.3, 2026-11-03) so that move needs no pyproject edit.
@@ -45,8 +45,7 @@ line-length = 100
 extend-exclude = ["*/migrations/*"]
 
 [tool.ruff.lint]
-# DTZ is load-bearing for the domain pass: it bans naive datetime.now()/date.today(),
-# exactly the mistake a Rails porter makes when implementing due-date arithmetic.
+# DTZ bans naive datetime.now()/date.today() in date arithmetic.
 select = ["E", "W", "F", "I", "N", "UP", "B", "A", "C4", "DJ", "DTZ", "PT", "SIM", "TID", "RUF"]
 
 [tool.ruff.lint.per-file-ignores]

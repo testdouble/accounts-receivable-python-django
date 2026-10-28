@@ -1,8 +1,7 @@
 """Django Ninja API.
 
-Note: `NinjaAPI` is unauthenticated and CSRF-exempt by default. That is correct for a
-port of an application with no users, but it is a deliberate choice rather than an
-oversight.
+`NinjaAPI` is unauthenticated and CSRF-exempt by default, which is correct for an
+application with no users.
 """
 
 import platform
